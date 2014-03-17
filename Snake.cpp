@@ -3,12 +3,12 @@
 
 Snake::Snake(sf::RenderWindow *mainwindow)
 {
-	pX = 400;
-	pY = 300;
+	pX = 200;
+	pY = 200;
 	Snake::gamewindow = mainwindow;
 	Score = 0;
 	Direction = "Left";
-	SnakeLimit = 50;
+	SnakeLimit = 5;
 	TheSnake.setFillColor(sf::Color::Green);
 	TheSnake.setSize(sf::Vector2f(10,10));
 }
@@ -66,19 +66,19 @@ void Snake::setDirection(std::string Directions)
 {
 	if(Directions=="Up")
 	{
-		pY--;
+		pY-=11;
 	}
 	else if(Directions=="Down")
 	{
-		pY++;
+		pY+=11;
 	}
 	else if(Directions=="Left")
 	{
-		pX--;
+		pX-=11;
 	}
 	else if(Directions=="Right")
 	{
-		pX++;
+		pX+=11;
 	}
 	SnakeSizeX.push_back(pX);
 	SnakeSizeY.push_back(pY);
@@ -100,7 +100,20 @@ bool Snake::getFoodCollision(Food food)
 	if(TheSnake.getGlobalBounds().intersects(food.TheFood.getGlobalBounds()))
 	{
 		Score++;
-		SnakeLimit+=10;
+		SnakeLimit+=1;
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
+bool Snake::getSpecialFoodCollision(Food food)
+{
+	if(TheSnake.getGlobalBounds().intersects(food.SpecialFood.getGlobalBounds()))
+	{
+		Score+=10;
 		return true;
 	}
 	else
@@ -126,26 +139,27 @@ void Snake::drawSnake(void)
 
 void Snake::getScreenCollision(void)
 {
-	if(pX>=800)
+	if(pX>=400)
 	{
 		pX=0;
 	}
 	else if(pX<=0)
 	{
-		pX=800;
+		pX=400;
 	}
-	else if(pY>=600)
+	else if(pY>=400)
 	{
 		pY=0;
 	}
 	else if(pY<=0)
 	{
-		pY=600;
+		pY=400;
 	}
 }
 
-void Snake::getSelfCollision(void)
+bool Snake::getSelfCollision(void)
 {
+	bool Collision = false;
 	if(SnakeSizeX.size()<SnakeLimit)
 	{
 		//Do nothing for now
@@ -156,12 +170,14 @@ void Snake::getSelfCollision(void)
 		{
 			if(pX == SnakeSizeX[i] && pY == SnakeSizeY[i])
 			{
-				gamewindow->close();
+				Collision = true;
+				break;
 			}
 			else
 			{
-				//do nothing
+				Collision = false;
 			}
 		}
 	}
+	return Collision;
 }
